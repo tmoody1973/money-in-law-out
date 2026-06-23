@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --tile:#1c2230; --border:#30363d;
+    --text:#e6edf3; --muted:#8b949e; --dem:#4aa3df; --rep:#ff6b6b; --green:#3fb950;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  [data-composition-id="root"]{
+    width:1920px;height:1080px;position:relative;overflow:hidden;
+    background:radial-gradient(1200px 760px at 50% 22%, #16263e 0%, rgba(13,17,23,0) 62%), var(--bg);
+    font-family:"Archivo",system-ui,sans-serif;color:var(--text);
+  }
+  .scene{position:absolute;inset:0;opacity:0;}
+  .col{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
+       justify-content:center;padding:110px 160px;gap:30px;text-align:center;}
+  .display{font-family:"Anton","Archivo Black",sans-serif;font-weight:400;}
+
+  /* S1 */
+  .kick{font-size:30px;letter-spacing:8px;font-weight:800;color:var(--dem);text-transform:uppercase;}
+  .title{font-family:"Anton",sans-serif;font-size:200px;font-weight:400;line-height:0.9;text-transform:uppercase;}
+  .title .l{color:var(--dem);}
+  .sub{font-size:46px;color:var(--muted);font-weight:600;}
+  .faces{display:flex;gap:16px;margin-top:6px;}
+  .faces .f{width:72px;height:72px;border-radius:999px;border:4px solid var(--dem);background:var(--tile);}
+  .faces .f.r{border-color:var(--rep);}
+
+  /* S2 chart (native 16:9) */
+  .cap{font-size:50px;font-weight:800;}
+  .cap b.d{color:var(--dem);}
+  .frame{border:1px solid var(--border);border-radius:20px;overflow:hidden;box-shadow:0 50px 140px rgba(0,0,0,0.6);background:var(--bg);}
+  .bartop{height:40px;background:#0b0f14;display:flex;align-items:center;gap:10px;padding:0 18px;border-bottom:1px solid var(--border);}
+  .bartop i{width:13px;height:13px;border-radius:999px;background:#2a313c;}
+  .axhint{display:flex;gap:48px;font-size:32px;font-weight:700;color:var(--muted);}
+
+  /* S3 stats (horizontal) */
+  .s3row{display:flex;align-items:center;gap:60px;justify-content:center;width:100%;max-width:1640px;}
+  .bignum{font-family:"Anton",sans-serif;font-size:280px;font-weight:400;line-height:0.85;font-variant-numeric:tabular-nums;}
+  .bignum.rep{color:var(--rep);} .bignum.dem{color:var(--dem);}
+  .bignum small{font-size:130px;color:var(--muted);}
+  .s3t{font-size:52px;font-weight:700;max-width:760px;text-align:left;line-height:1.12;}
+  .s3t b{color:var(--text);}
+  .s3line{font-size:54px;font-weight:700;color:var(--muted);}
+  .s3oos{font-family:"Anton",sans-serif;font-size:150px;color:var(--dem);text-transform:uppercase;letter-spacing:-1px;}
+
+  /* S4 candidate (modal left, chips right) */
+  .s4head{position:absolute;top:70px;left:120px;display:flex;align-items:center;gap:24px;}
+  .s4face{width:128px;height:128px;border-radius:999px;border:5px solid var(--dem);object-fit:cover;}
+  .s4nm{font-size:66px;font-weight:900;line-height:1;}
+  .s4pt{font-size:34px;font-weight:600;color:var(--dem);}
+  .s4wrap{position:absolute;left:120px;top:228px;width:760px;height:790px;border-radius:20px;overflow:hidden;
+          border:1px solid var(--border);box-shadow:0 40px 120px rgba(0,0,0,0.6);background:var(--panel);}
+  .s4wrap img{position:absolute;top:0;left:0;width:760px;transform-origin:0 0;will-change:transform;}
+  .chips{position:absolute;left:1000px;right:120px;top:250px;display:flex;flex-direction:column;gap:26px;}
+  .chip{display:flex;align-items:center;justify-content:space-between;gap:24px;background:rgba(22,27,34,0.97);
+        border:1px solid var(--border);border-radius:18px;padding:30px 34px;box-shadow:0 16px 50px rgba(0,0,0,0.5);}
+  .chip .lbl{font-size:30px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
+  .chip .val{font-size:58px;font-weight:900;text-align:right;}
+  .chip.dem .val{color:var(--dem);} .chip.green .val{color:var(--green);} .chip.rep{border-color:var(--rep);} .chip.rep .val{color:var(--rep);}
+  .chip.tile .val{font-size:44px;}
+
+  /* S5 */
+  .cta-t{font-family:"Anton",sans-serif;font-size:150px;font-weight:400;line-height:0.92;text-transform:uppercase;}
+  .cta-l{font-size:46px;color:var(--muted);font-weight:600;}
+  .pill{display:inline-flex;align-items:center;gap:18px;background:var(--tile);border:2px solid var(--dem);
+        border-radius:999px;padding:24px 44px;font-size:46px;font-weight:800;}
+  .pill .s{color:var(--green);}
+  .url{font-size:32px;color:var(--muted);letter-spacing:1px;}
+</style>
+</head>
+<body>
+<div data-composition-id="root" data-width="1920" data-height="1080" data-start="0" data-duration="45.7" data-track-index="0">
+
+  <div class="scene" id="s1"><div class="col">
+    <div class="kick" id="s1k">A MotherDuck Dive</div>
+    <div class="title" id="s1t">Money In <span class="l">Law Out</span></div>
+    <div class="sub" id="s1s">Who funds the U.S. Senate?</div>
+    <div class="faces" id="s1f"><div class="f"></div><div class="f r"></div><div class="f"></div><div class="f r"></div><div class="f"></div><div class="f r"></div><div class="f"></div></div>
+  </div></div>
+
+  <div class="scene" id="s2"><div class="col" style="gap:40px;">
+    <div class="cap" id="s2c">Every face is a <b class="d">real senator.</b></div>
+    <div class="frame" id="s2f" style="width:1340px;">
+      <div class="bartop"><i></i><i></i><i></i></div>
+      <div style="width:1340px;height:754px;overflow:hidden;">
+        <img id="s2img" src="assets/embed-scatter.png" style="width:1340px;transform-origin:50% 44%;display:block;" />
+      </div>
+    </div>
+  </div></div>
+
+  <div class="scene" id="s3"><div class="col" style="gap:80px;">
+    <div class="s3row" id="s3a">
+      <div class="bignum rep">70<small>/99</small></div>
+      <div class="s3t">senators passed <b>zero laws</b> this Congress</div>
+    </div>
+    <div class="s3row" id="s3b" style="flex-direction:column;gap:6px;">
+      <div class="s3line">…and most raise the majority of their money</div>
+      <div class="s3oos">OUT OF STATE</div>
+    </div>
+  </div></div>
+
+  <div class="scene" id="s4">
+    <div class="s4head" id="s4head">
+      <img class="s4face" src="assets/ossoff-face.jpg" />
+      <div><div class="s4nm">Jon Ossoff</div><div class="s4pt">Democrat · Georgia</div></div>
+    </div>
+    <div class="s4wrap" id="s4wrap"><img id="s4img" src="assets/ossoff-modal-2x.png" /></div>
+    <div class="chips">
+      <div class="chip dem" id="c1"><span class="lbl">Raised</span><span class="val">$156.1M</span></div>
+      <div class="chip green" id="c2"><span class="lbl">From out of state</span><span class="val">93%</span></div>
+      <div class="chip tile dem" id="c3"><span class="lbl">Top donors</span><span class="val">Google · Microsoft · Apple</span></div>
+      <div class="chip rep" id="c4"><span class="lbl">Super-PAC money to defeat him</span><span class="val">$121.9M</span></div>
+    </div>
+  </div>
+
+  <div class="scene" id="s5"><div class="col">
+    <div class="kick" id="s5k">Live · FEC + Congress data</div>
+    <div class="cta-t" id="s5t">Follow the money.</div>
+    <div class="cta-l" id="s5l">Explore all 99 senators in the interactive Dive.</div>
+    <div class="pill" id="s5p"><span class="s">★</span> Vote · MotherDuck Dive Gallery</div>
+    <div class="url" id="s5u">motherduck.com/dive-gallery</div>
+  </div></div>
+
+</div>
+
+<script src="gsap.min.js"></script>
+<script>
+  window.__timelines = window.__timelines || {};
+  const tl = gsap.timeline({ paused:true });
+  const fIn=(s,t)=>tl.to(s,{opacity:1,duration:0.55,ease:"power2.out"},t);
+  const fOut=(s,t)=>tl.to(s,{opacity:0,duration:0.55,ease:"power2.in"},t);
+
+  // S1 0–6.95
+  fIn("#s1",0.1);
+  tl.from("#s1k",{y:-24,opacity:0,duration:0.6,ease:"power3.out"},0.4);
+  tl.from("#s1t",{y:80,opacity:0,duration:0.9,ease:"expo.out"},0.7);
+  tl.from("#s1s",{y:30,opacity:0,duration:0.7,ease:"power2.out"},1.3);
+  tl.from("#s1f .f",{scale:0,opacity:0,duration:0.5,ease:"back.out(1.7)",stagger:0.06},1.7);
+
+  // S2 6.95–13.15
+  fOut("#s1",6.5); fIn("#s2",6.95);
+  tl.from("#s2c",{y:-30,opacity:0,duration:0.6,ease:"power3.out"},7.2);
+  tl.from("#s2f",{y:70,opacity:0,scale:0.96,duration:0.8,ease:"expo.out"},7.4);
+  tl.fromTo("#s2img",{scale:1.0},{scale:1.34,duration:5.4,ease:"none"},7.6);
+
+  // S3 13.15–21.15
+  fOut("#s2",12.7); fIn("#s3",13.15);
+  tl.from("#s3a .bignum",{scale:0.6,opacity:0,duration:0.7,ease:"back.out(1.5)"},13.5);
+  tl.from("#s3a .s3t",{x:30,opacity:0,duration:0.5,ease:"power2.out"},13.9);
+  tl.from("#s3b .s3line",{y:20,opacity:0,duration:0.5,ease:"power2.out"},16.4);
+  tl.from("#s3b .s3oos",{y:40,opacity:0,duration:0.7,ease:"expo.out"},16.8);
+
+  // S4 21.15–37.95
+  fOut("#s3",20.7); fIn("#s4",21.15);
+  tl.from("#s4head",{x:-40,opacity:0,duration:0.6,ease:"power3.out"},21.4);
+  tl.from("#s4wrap",{x:-50,opacity:0,scale:0.95,duration:0.8,ease:"expo.out"},21.7);
+  tl.set("#s4img",{scale:1.0,x:0,y:0},21.7);
+  tl.to("#s4img",{scale:1.25,x:0,y:259,duration:0.9,ease:"power2.inOut"},23.6);   // stats (left-anchored)
+  tl.from("#c1",{x:40,opacity:0,duration:0.5,ease:"back.out(1.5)"},23.9);
+  tl.to("#s4img",{scale:1.25,x:0,y:132,duration:0.9,ease:"power2.inOut"},25.9);   // out-of-state
+  tl.from("#c2",{x:40,opacity:0,duration:0.5,ease:"back.out(1.5)"},26.2);
+  tl.to("#s4img",{scale:1.25,x:0,y:-247,duration:0.95,ease:"power2.inOut"},28.6); // donors
+  tl.from("#c3",{x:40,opacity:0,duration:0.5,ease:"back.out(1.5)"},28.9);
+  tl.to("#s4img",{scale:1.25,x:0,y:-43,duration:0.95,ease:"power2.inOut"},32.0);  // super-PAC
+  tl.from("#c4",{x:40,opacity:0,duration:0.5,ease:"back.out(1.6)"},32.4);
+
+  // S5 37.95–45.7
+  fOut("#s4",37.5); fIn("#s5",37.95);
+  tl.from("#s5k",{y:-22,opacity:0,duration:0.5,ease:"power2.out"},38.2);
+  tl.from("#s5t",{y:60,opacity:0,duration:0.8,ease:"expo.out"},38.4);
+  tl.from("#s5l",{y:26,opacity:0,duration:0.6,ease:"power2.out"},38.9);
+  tl.from("#s5p",{scale:0.85,opacity:0,duration:0.6,ease:"back.out(1.6)"},39.4);
+  tl.from("#s5u",{opacity:0,duration:0.6,ease:"power1.out"},39.9);
+  tl.to("#s5 .col",{opacity:0,duration:0.7,ease:"power2.in"},44.9);
+
+  window.__timelines["root"] = tl;
+</script>
+</body>
+</html>

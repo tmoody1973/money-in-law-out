@@ -169,17 +169,17 @@
   tl.from("#s4wrap",{y:60,opacity:0,scale:0.94,duration:0.8,ease:"expo.out"},21.7);
   // modal starts showing the top (full-ish)
   tl.set("#s4img",{scale:1.0,x:0,y:0},21.7);
-  // beat: zoom to stats row ($156M peak)  ~23.6
-  tl.to("#s4img",{scale:1.35,x:-161,y:292,duration:0.9,ease:"power2.inOut"},23.6);
+  // beat: zoom to stats row ($156M peak)  ~23.6  (x:0 = left-anchored, no left clip)
+  tl.to("#s4img",{scale:1.25,x:0,y:305,duration:0.9,ease:"power2.inOut"},23.6);
   tl.from("#c1",{x:-40,opacity:0,duration:0.5,ease:"back.out(1.5)"},23.9);
   // beat: pan to funding mix / out-of-state (93%)  ~25.9
-  tl.to("#s4img",{scale:1.35,x:-161,y:127,duration:0.9,ease:"power2.inOut"},25.9);
+  tl.to("#s4img",{scale:1.25,x:0,y:152,duration:0.9,ease:"power2.inOut"},25.9);
   tl.from("#c2",{x:-40,opacity:0,duration:0.5,ease:"back.out(1.5)"},26.2);
   // beat: pan to top org donors (Big Tech)  ~28.6
-  tl.to("#s4img",{scale:1.4,x:-184,y:-400,duration:0.95,ease:"power2.inOut"},28.6);
+  tl.to("#s4img",{scale:1.25,x:0,y:-307,duration:0.95,ease:"power2.inOut"},28.6);
   tl.from("#c3",{x:-40,opacity:0,duration:0.5,ease:"back.out(1.5)"},28.9);
   // beat: pan to super-PAC ($121.9M opposing)  ~32.0
-  tl.to("#s4img",{scale:1.4,x:-184,y:-123,duration:0.95,ease:"power2.inOut"},32.0);
+  tl.to("#s4img",{scale:1.25,x:0,y:-60,duration:0.95,ease:"power2.inOut"},32.0);
   tl.from("#c4",{x:-40,opacity:0,duration:0.5,ease:"back.out(1.6)"},32.4);
 
   // S5  37.95 – 45.7  (VO 38.20–44.66)
