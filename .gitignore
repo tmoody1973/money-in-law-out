@@ -5,3 +5,5 @@ data/
 node_modules/
 .dive-preview/node_modules/
 .dive-preview/.env
+.playwright-mcp/
+/*.png
