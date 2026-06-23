@@ -131,3 +131,31 @@ Ship after step 2 at the latest; everything after is upside.
   faces-for-notable-only if mush.
 - **Congress.gov rate limits** across 100 members — sequential pulls with light backoff; cache locally.
 - **fec_id disambiguation** for members with multiple candidacies.
+
+---
+
+## Implemented enhancements (during build, beyond original spec)
+- **Full dark theme** (bg `#0d1117`, Dem `#4aa3df`, Rep `#ff6b6b`) — dark themes are officially supported
+  (theme gallery: Dark Canvas, etc.). Matches the "A Home Fit For You" modal aesthetic.
+- **Rich click modal** (not just an inline panel): photo, hero stats, money-mix bar, out-of-state %,
+  committees, top org donors, recent bills.
+- **Extra data captured:** `out_state_pct` (FEC Schedule A by-state), small-dollar (`individual_unitemized`),
+  `dollars_per_resident` (state pop table), committee assignments (unitedstates YAML), top org donors
+  (FEC by_employer, junk-employer filtered), peak-campaign vs career money.
+- **Pivot:** "top issues" via `policyArea` was dropped — CRS leaves it unpopulated for most current-Congress
+  bills (verified: 18/20 EMPTY). Replaced with committee assignments (cleaner, complete).
+- **X-metric is peak campaign** (max-receipts cycle), not current cycle (which is near-empty for most senators).
+
+## v2 — Lobbying influence graph (deferred, post-hackathon)
+Adds the influence industry as a third actor: **client/firm → lobbied bill → senator who sponsored it**.
+- **Sources:** Senate LDA API (raw LD-1/LD-2/LD-203; note: site sunsets 2026-06-30 → LDA.gov) ·
+  **LobbyView** bill-level dataset (the clean filing↔bill join) · OpenSecrets bulk (entity enrichment;
+  no live API since 2025-04).
+- **Join path:** lobbyist → registrant → client → filing → (issue code + bill #) → bill sponsor → senator → committee.
+  Strongest public edge = "client lobbied a bill Senator Y sponsored" (not direct contact).
+- **Why deferred:** unfamiliar multi-table ETL (fuzzy LDA bill-number matching, large LobbyView files),
+  too risky against a same-day deadline with a working entry to protect.
+- **Min schema:** `filings, clients, registrants, lobbyists, filing_issues, filing_bills, bills, senators,
+  committees, senator_bill_edges, client_senator_influence_edges`.
+- **In-Dive surface:** modal section "Lobbying pressure on their bills" — top clients/firms that lobbied
+  the bills this senator sponsored, + filing counts by issue.
