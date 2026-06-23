@@ -210,44 +210,10 @@ export default function Dive() {
         none of it becomes law: <b>{N(k.n_zero_laws)} of {N(k.n)}</b> senators have enacted <b>zero</b> bills this Congress.
       </p>
 
-      <div className="flex gap-2 flex-wrap text-xs mb-5" style={{ color: MUTED }}>
-        {[
-          "Each face = one U.S. senator",
-          "↑ higher = sponsored more bills",
-          "→ right = more, on the money metric you pick",
-          "bigger face = bigger campaign",
-        ].map((t, i) => (
-          <span key={i} style={{ background: TILE, border: `1px solid ${BORDER}`, borderRadius: 999, padding: "3px 10px" }}>{t}</span>
-        ))}
-        <span style={{ background: TILE, border: `1px solid ${DEM}`, borderRadius: 999, padding: "3px 10px", color: DEM }}>
-          Click a face → who funds them
-        </span>
-      </div>
-
-      <div className="grid grid-cols-4 gap-3 mb-5">
-        {LEAD_CATS.map((cat) => (
-          <div key={cat} style={{ background: TILE, border: `1px solid ${BORDER}`, borderRadius: 8, padding: "8px 10px" }}>
-            <div className="text-xs mb-1" style={{ color: MUTED }}>{cat}</div>
-            {leads.isLoading ? (
-              <div className="animate-pulse" style={{ height: 80, background: PANEL, borderRadius: 4 }} />
-            ) : (leadsByCat[cat] || []).map((l, i) => (
-              <button key={i} onClick={() => setSel(l.bg as string)}
-                style={{ display: "flex", justifyContent: "space-between", gap: 6, width: "100%",
-                  textAlign: "left", padding: "1px 0", cursor: "pointer" }}>
-                <span className="text-xs" style={{ color: TEXT, overflow: "hidden",
-                  textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{N(l.rk)}. {l.nm as string}</span>
-                <span className="text-xs" style={{ color: DEM, flexShrink: 0 }}>{l.val as string}</span>
-              </button>
-            ))}
-          </div>
-        ))}
-      </div>
-
-      <div className="grid grid-cols-3 gap-8 mb-5">
-        <Kpi v={k.top_funded_median} label="median bills — top-funded 10%" />
-        <Kpi v={k.overall_median} label="median bills — all senators" />
-        <Kpi v={k.n} label="senators" />
-      </div>
+      <p className="text-xs mb-4" style={{ color: MUTED }}>
+        Each face is a senator · → right = more money · ↑ up = more bills · bigger = bigger campaign ·{" "}
+        <span style={{ color: DEM }}>click any face for the full money trail</span>
+      </p>
 
       <div className="flex gap-2 mb-3 flex-wrap items-center">
         <span className="text-xs" style={{ color: MUTED }}>party</span>
@@ -308,6 +274,29 @@ export default function Dive() {
           </ScatterChart>
         </ResponsiveContainer>
       )}
+
+      {/* standouts — explore the extremes (below the hero) */}
+      <div className="mt-6">
+        <div className="text-xs mb-2" style={{ color: MUTED }}>STANDOUTS · click any name for their dossier</div>
+        <div className="grid grid-cols-4 gap-3">
+          {LEAD_CATS.map((cat) => (
+            <div key={cat} style={{ background: TILE, border: `1px solid ${BORDER}`, borderRadius: 8, padding: "8px 10px" }}>
+              <div className="text-xs mb-1" style={{ color: MUTED }}>{cat}</div>
+              {leads.isLoading ? (
+                <div className="animate-pulse" style={{ height: 80, background: PANEL, borderRadius: 4 }} />
+              ) : (leadsByCat[cat] || []).map((l, i) => (
+                <button key={i} onClick={() => setSel(l.bg as string)}
+                  style={{ display: "flex", justifyContent: "space-between", gap: 6, width: "100%",
+                    textAlign: "left", padding: "1px 0", cursor: "pointer" }}>
+                  <span className="text-xs" style={{ color: TEXT, overflow: "hidden",
+                    textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{N(l.rk)}. {l.nm as string}</span>
+                  <span className="text-xs" style={{ color: DEM, flexShrink: 0 }}>{l.val as string}</span>
+                </button>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
 
       {/* ── modal ── */}
       {bg && (
