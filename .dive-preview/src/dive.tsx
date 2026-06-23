@@ -11,6 +11,7 @@ const GREEN = "#3fb950";
 
 const N = (v: unknown): number => (v != null ? Number(v) : 0);
 const PARTY = (p: string) => (p === "Democrat" ? DEM : p === "Republican" ? REP : IND);
+const PARTY_NAME: Record<string, string> = { D: "Democrat", R: "Republican", I: "Independent" };
 const cleanCommittee = (s: string) =>
   s.replace(/^Senate Select Committee on /, "")
    .replace(/^Senate Committee on /, "")
@@ -75,6 +76,8 @@ function MixBar({ pac, ind, small }: { pac: number; ind: number; small: number }
 export default function Dive() {
   const [xMetric, setXMetric] = useDiveState<XMetric>("x", "total_raised");
   const [sel, setSel] = useDiveState<string>("sel", "");
+  const [partyF, setPartyF] = useDiveState<string>("pf", "all");
+  const [stateF, setStateF] = useDiveState<string>("sf", "all");
   const bg = sel.replace(/[^A-Za-z0-9]/g, "");
 
   const q = useSQLQuery(`
@@ -156,6 +159,16 @@ export default function Dive() {
      WHERE bioguide_id = '${bg}' ORDER BY rank LIMIT 5`,
     { enabled: !!bg }
   );
+  const superPac = useSQLQuery(
+    `SELECT support_total, oppose_total FROM "my_db"."main"."super_pac_totals" WHERE bioguide_id = '${bg}'`,
+    { enabled: !!bg }
+  );
+  const superPacTop = useSQLQuery(
+    `SELECT committee, support_oppose, total FROM "my_db"."main"."super_pac"
+     WHERE bioguide_id = '${bg}' ORDER BY rank LIMIT 5`,
+    { enabled: !!bg }
+  );
+  const sp = (Array.isArray(superPac.data) ? superPac.data : [])[0];
   const d = (Array.isArray(detail.data) ? detail.data : [])[0];
 
   const rows = (Array.isArray(q.data) ? q.data : []).map((r) => ({
@@ -169,6 +182,11 @@ export default function Dive() {
     uri: r.photo_uri as string | null,
     fill: PARTY(r.party as string),
   }));
+
+  const states = Array.from(new Set(rows.map((r) => r.state))).sort();
+  const shown = rows.filter((r) =>
+    (partyF === "all" || r.party === PARTY_NAME[partyF]) &&
+    (stateF === "all" || r.state === stateF));
 
   const Kpi = ({ v, label }: { v: any; label: string }) => (
     <div>
@@ -215,6 +233,26 @@ export default function Dive() {
         <Kpi v={k.n} label="senators" />
       </div>
 
+      <div className="flex gap-2 mb-3 flex-wrap items-center">
+        <span className="text-xs" style={{ color: MUTED }}>party</span>
+        {["all", "D", "R", "I"].map((p) => (
+          <button key={p} onClick={() => setPartyF(p)} className="text-xs px-2 py-1 rounded"
+            style={{ background: partyF === p ? DEM : TILE, color: partyF === p ? "#04121f" : TEXT,
+              border: `1px solid ${BORDER}` }}>{p}</button>
+        ))}
+        <span className="text-xs ml-2" style={{ color: MUTED }}>state</span>
+        <select value={stateF} onChange={(e) => setStateF(e.target.value)} className="text-xs"
+          style={{ background: TILE, color: TEXT, border: `1px solid ${BORDER}`, borderRadius: 4, padding: "2px 6px" }}>
+          <option value="all">all</option>
+          {states.map((s) => <option key={s} value={s}>{s}</option>)}
+        </select>
+        {(partyF !== "all" || stateF !== "all") && (
+          <button onClick={() => { setPartyF("all"); setStateF("all"); }} className="text-xs px-2 py-1"
+            style={{ color: MUTED }}>clear ✕</button>
+        )}
+        <span className="text-xs ml-1" style={{ color: MUTED }}>· showing {shown.length}</span>
+      </div>
+
       <div className="flex gap-2 mb-3 flex-wrap">
         {(Object.keys(X_LABEL) as XMetric[]).map((m) => (
           <button key={m} onClick={() => setXMetric(m)} className="text-xs px-2 py-1 rounded"
@@ -248,7 +286,7 @@ export default function Dive() {
                   </div>
                 );
               }} />
-            <Scatter data={rows} isAnimationActive={false}
+            <Scatter data={shown} isAnimationActive={false}
               shape={(props: any) => <FaceDot {...props} />}
               onClick={(pt: any) => setSel(pt?.payload?.bioguide || pt?.bioguide || "")} />
           </ScatterChart>
@@ -308,6 +346,22 @@ export default function Dive() {
                     </div>
                   )}
                 </div>
+
+                {sp && (N(sp.support_total) + N(sp.oppose_total)) > 0 && (
+                  <div style={{ marginBottom: 14 }}>
+                    <div className="text-xs mb-1" style={{ color: MUTED }}>OUTSIDE MONEY · SUPER PACs (uncapped)</div>
+                    <div className="flex gap-4 text-sm" style={{ marginBottom: 4 }}>
+                      <span style={{ color: GREEN }}>▲ {fmtM(N(sp.support_total))} supporting</span>
+                      <span style={{ color: REP }}>▼ {fmtM(N(sp.oppose_total))} opposing</span>
+                    </div>
+                    {(Array.isArray(superPacTop.data) ? superPacTop.data : []).map((c, i) => (
+                      <div key={i} className="text-xs flex justify-between" style={{ padding: "1px 0" }}>
+                        <span style={{ color: c.support_oppose === "S" ? GREEN : REP }}>
+                          {c.support_oppose === "S" ? "▲" : "▼"} {c.committee as string}</span>
+                        <span style={{ color: MUTED }}>{fmtAmt(N(c.total))}</span>
+                      </div>))}
+                  </div>
+                )}
 
                 <div className="grid grid-cols-2 gap-4" style={{ marginBottom: 14 }}>
                   <div>

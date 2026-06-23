@@ -24,6 +24,10 @@ CREATE OR REPLACE TABLE my_db.main.photos AS
   SELECT * FROM read_csv_auto('data/photos.csv', header=true, quote='"', all_varchar=true);
 CREATE OR REPLACE TABLE my_db.main.out_of_state AS
   SELECT * FROM read_csv_auto('data/out_of_state.csv', header=true);
+CREATE OR REPLACE TABLE my_db.main.super_pac_totals AS
+  SELECT * FROM read_csv_auto('data/super_pac_totals.csv', header=true);
+CREATE OR REPLACE TABLE my_db.main.super_pac AS
+  SELECT * FROM read_csv_auto('data/super_pac.csv', header=true);
 
 -- main analytic view (drives the scatter + modal headline numbers) ----------
 CREATE OR REPLACE VIEW my_db.main.member_money_law AS
