@@ -204,8 +204,8 @@ export default function Dive() {
       <p className="text-sm mb-2" style={{ color: MUTED }}>
         U.S. Senate · campaign money raised vs. bills sponsored, 119th Congress · click a face
       </p>
-      <p className="text-sm mb-5" style={{ color: TEXT, maxWidth: 820, lineHeight: 1.55,
-        borderLeft: `3px solid ${DEM}`, paddingLeft: 12 }}>
+      <p className="text-sm mb-5" style={{ color: TEXT, maxWidth: 860, lineHeight: 1.55,
+        background: "rgba(74,163,223,0.06)", border: `1px solid ${BORDER}`, borderRadius: 10, padding: "14px 18px" }}>
         The best-funded senators aren't slackers — the top-funded 10% sponsor a median{" "}
         <b>{N(k.top_funded_median)}</b> bills vs <b>{N(k.overall_median)}</b> chamber-wide. Yet{" "}
         <b>{N(k.n_mostly_out)} of {N(k.n)}</b> raise ≥70% of their money <b>out-of-state</b> — and almost
@@ -310,6 +310,11 @@ export default function Dive() {
           ))}
         </div>
       </div>
+
+      <p className="text-xs mt-5" style={{ color: MUTED, maxWidth: 920 }}>
+        Note: shows 99 of 100 senators. Sen. Alan Armstrong (R-OK), appointed March 2026, has no FEC
+        campaign committee yet — so there's no campaign-finance data to plot him on the money axis.
+      </p>
 
       {/* ── modal ── */}
       {bg && (

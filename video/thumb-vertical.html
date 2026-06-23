@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{ --bg:#0d1117; --text:#e6edf3; --muted:#8b949e; --dem:#4aa3df; --rep:#ff6b6b; --green:#3fb950; }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  .stage{width:1080px;height:1920px;position:relative;overflow:hidden;
+         background:radial-gradient(900px 800px at 50% 20%, #16263e 0%, rgba(13,17,23,0) 60%), var(--bg);
+         font-family:"Archivo",system-ui,sans-serif;color:var(--text);}
+  .top{position:absolute;top:120px;left:80px;right:80px;display:flex;flex-direction:column;gap:24px;text-align:center;align-items:center;}
+  .kick{font-size:32px;letter-spacing:8px;font-weight:800;color:var(--dem);text-transform:uppercase;}
+  .title{font-family:"Anton",sans-serif;font-size:190px;line-height:0.86;text-transform:uppercase;}
+  .title .l{color:var(--dem);}
+  .hook{font-size:46px;font-weight:600;color:var(--muted);line-height:1.15;max-width:840px;}
+
+  /* faces band */
+  .band{position:absolute;left:0;right:0;top:760px;height:560px;
+        background-image:url(assets/embed-scatter.png);background-size:200%;background-position:50% 50%;
+        background-repeat:no-repeat;}
+  .bandfade{position:absolute;left:0;right:0;top:760px;height:560px;background:
+    linear-gradient(180deg, var(--bg) 0%, rgba(13,17,23,0) 18%, rgba(13,17,23,0) 82%, var(--bg) 100%);}
+
+  .bottom{position:absolute;left:80px;right:80px;bottom:150px;display:flex;flex-direction:column;gap:30px;align-items:center;}
+  .chip{display:inline-block;white-space:nowrap;text-align:center;background:rgba(22,27,34,0.95);border:3px solid var(--rep);
+        border-radius:20px;padding:30px 44px;font-size:56px;font-weight:900;box-shadow:0 16px 50px rgba(0,0,0,0.55);}
+  .chip b{color:var(--rep);}
+  .brand{font-size:30px;font-weight:800;color:var(--muted);letter-spacing:1px;text-align:center;}
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="top">
+      <div class="kick">A MotherDuck Dive</div>
+      <div class="title">Money In,<br><span class="l">Law Out</span></div>
+      <div class="hook">Who really funds the U.S. Senate?</div>
+    </div>
+    <div class="band"></div>
+    <div class="bandfade"></div>
+    <div class="bottom">
+      <div class="chip"><b>70 of 99</b> passed <b>zero laws</b></div>
+      <div class="brand">FEC + Congress data · built with DuckDB + MotherDuck</div>
+    </div>
+  </div>
+</body>
+</html>
