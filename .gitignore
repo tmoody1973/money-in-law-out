@@ -11,3 +11,6 @@ frames/
 video/frames/
 video/_verify_*.png
 video/node_modules/
+video/frames_v/
+video/audio/sil_*.mp3
+video/audio/concat.txt

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --tile:#1c2230; --border:#30363d;
+    --text:#e6edf3; --muted:#8b949e; --dem:#4aa3df; --rep:#ff6b6b; --green:#3fb950;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  [data-composition-id="root"]{
+    width:1080px;height:1920px;position:relative;overflow:hidden;
+    background:radial-gradient(900px 900px at 50% 26%, #16263e 0%, rgba(13,17,23,0) 62%), var(--bg);
+    font-family:"Archivo",system-ui,sans-serif;color:var(--text);
+  }
+  .display{font-family:"Anton","Archivo Black",sans-serif;font-weight:400;}
+  .scene{position:absolute;inset:0;opacity:0;}
+  .col{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
+       justify-content:center;padding:120px 80px;gap:36px;text-align:center;}
+
+  /* S1 title */
+  .kick{font-size:34px;letter-spacing:8px;font-weight:800;color:var(--dem);text-transform:uppercase;}
+  .title{font-family:"Anton",sans-serif;font-size:158px;font-weight:400;line-height:0.92;letter-spacing:0;text-transform:uppercase;}
+  .title .l{color:var(--dem);}
+  .sub{font-size:48px;color:var(--muted);font-weight:600;max-width:860px;line-height:1.2;}
+  .faces{display:flex;gap:16px;margin-top:8px;}
+  .faces .f{width:84px;height:84px;border-radius:999px;border:4px solid var(--dem);background:var(--tile);}
+  .faces .f.r{border-color:var(--rep);}
+
+  /* S2 chart */
+  .cap{font-size:52px;font-weight:800;line-height:1.12;max-width:920px;}
+  .cap b.d{color:var(--dem);} .cap b.g{color:var(--green);}
+  .frame{border:1px solid var(--border);border-radius:22px;overflow:hidden;
+         box-shadow:0 50px 140px rgba(0,0,0,0.6);background:var(--bg);}
+  .bartop{height:44px;background:#0b0f14;display:flex;align-items:center;gap:11px;padding:0 20px;border-bottom:1px solid var(--border);}
+  .bartop i{width:15px;height:15px;border-radius:999px;background:#2a313c;}
+  .axhint{display:flex;gap:40px;font-size:34px;font-weight:700;color:var(--muted);}
+
+  /* S3 stats */
+  .stat{display:flex;flex-direction:column;align-items:center;gap:10px;}
+  .stat .n{font-family:"Anton",sans-serif;font-size:240px;font-weight:400;line-height:0.85;letter-spacing:-1px;font-variant-numeric:tabular-nums;}
+  .stat .n.rep{color:var(--rep);} .stat .n.dem{color:var(--dem);}
+  .stat .n small{font-size:120px;color:var(--muted);}
+  .stat .t{font-size:50px;font-weight:700;max-width:840px;line-height:1.12;}
+  .stat .t b{color:var(--text);}
+
+  /* S4 candidate */
+  .s4-head{position:absolute;top:80px;left:0;right:0;display:flex;align-items:center;justify-content:center;gap:26px;}
+  .s4-face{width:150px;height:150px;border-radius:999px;border:5px solid var(--dem);object-fit:cover;}
+  .s4-name{text-align:left;}
+  .s4-name .nm{font-size:66px;font-weight:900;line-height:1;}
+  .s4-name .pt{font-size:38px;font-weight:600;color:var(--dem);}
+  .s4-modalwrap{position:absolute;top:268px;left:80px;width:920px;height:940px;border-radius:22px;
+                overflow:hidden;border:1px solid var(--border);box-shadow:0 40px 120px rgba(0,0,0,0.6);background:var(--panel);}
+  .s4-modalwrap img{position:absolute;top:0;left:0;width:920px;transform-origin:0 0;will-change:transform;}
+  .chips{position:absolute;left:80px;right:80px;top:1250px;display:flex;flex-direction:column;gap:20px;}
+  .chip{display:flex;align-items:center;justify-content:space-between;gap:24px;
+        background:rgba(22,27,34,0.97);border:1px solid var(--border);border-radius:18px;padding:24px 30px;
+        box-shadow:0 16px 50px rgba(0,0,0,0.5);}
+  .chip .lbl{font-size:30px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
+  .chip .val{font-size:52px;font-weight:900;text-align:right;}
+  .chip.dem .val{color:var(--dem);} .chip.green .val{color:var(--green);} .chip.rep{border-color:var(--rep);} .chip.rep .val{color:var(--rep);}
+  .chip.tile .val{font-size:42px;}
+
+  /* S5 cta */
+  .cta-t{font-family:"Anton",sans-serif;font-size:138px;font-weight:400;letter-spacing:0;line-height:0.9;text-transform:uppercase;}
+  .cta-l{font-size:48px;color:var(--muted);font-weight:600;max-width:840px;line-height:1.2;}
+  .pill{display:inline-flex;align-items:center;gap:18px;background:var(--tile);border:2px solid var(--dem);
+        border-radius:999px;padding:26px 46px;font-size:50px;font-weight:800;}
+  .pill .s{color:var(--green);}
+  .url{font-size:34px;color:var(--muted);letter-spacing:1px;}
+</style>
+</head>
+<body>
+<div data-composition-id="root" data-width="1080" data-height="1920" data-start="0" data-duration="45.7" data-track-index="0">
+
+  <!-- S1 -->
+  <div class="scene" id="s1"><div class="col">
+    <div class="kick" id="s1k">A MotherDuck Dive</div>
+    <div class="title" id="s1t">Money In<br><span class="l">Law Out</span></div>
+    <div class="sub" id="s1s">Who funds the U.S. Senate?</div>
+    <div class="faces" id="s1f"><div class="f"></div><div class="f r"></div><div class="f"></div><div class="f r"></div><div class="f"></div></div>
+  </div></div>
+
+  <!-- S2 -->
+  <div class="scene" id="s2"><div class="col" style="gap:48px;">
+    <div class="cap" id="s2c">Every face is a <b class="d">real senator.</b></div>
+    <div class="frame" id="s2f" style="width:1000px;">
+      <div class="bartop"><i></i><i></i><i></i></div>
+      <div style="width:1000px;height:563px;overflow:hidden;">
+        <img id="s2img" src="assets/embed-scatter.png" style="width:1000px;transform-origin:50% 42%;display:block;" />
+      </div>
+    </div>
+    <div class="axhint" id="s2a"><span>money raised →</span><span>↑ bills passed</span></div>
+  </div></div>
+
+  <!-- S3 -->
+  <div class="scene" id="s3"><div class="col" style="gap:90px;">
+    <div class="stat" id="s3a">
+      <div class="n rep">70<small>/99</small></div>
+      <div class="t">senators passed <b>zero laws</b> this Congress</div>
+    </div>
+    <div class="stat" id="s3b">
+      <div class="t" style="font-size:58px;">…and most raise the majority of their money</div>
+      <div class="n dem" style="font-size:150px;letter-spacing:-2px;">OUT&nbsp;OF&nbsp;STATE</div>
+    </div>
+  </div></div>
+
+  <!-- S4 -->
+  <div class="scene" id="s4">
+    <div class="s4-head" id="s4head">
+      <img class="s4-face" src="assets/ossoff-face.jpg" />
+      <div class="s4-name"><div class="nm">Jon Ossoff</div><div class="pt">Democrat · Georgia</div></div>
+    </div>
+    <div class="s4-modalwrap" id="s4wrap"><img id="s4img" src="assets/ossoff-modal-2x.png" /></div>
+    <div class="chips">
+      <div class="chip dem" id="c1"><span class="lbl">Raised</span><span class="val">$156.1M</span></div>
+      <div class="chip green" id="c2"><span class="lbl">From out of state</span><span class="val">93%</span></div>
+      <div class="chip tile dem" id="c3"><span class="lbl">Top donors</span><span class="val">Google · Microsoft · Apple</span></div>
+      <div class="chip rep" id="c4"><span class="lbl">Super-PAC money to defeat him</span><span class="val">$121.9M</span></div>
+    </div>
+  </div>
+
+  <!-- S5 -->
+  <div class="scene" id="s5"><div class="col">
+    <div class="kick" id="s5k">Live · FEC + Congress data</div>
+    <div class="cta-t" id="s5t">Follow<br>the money.</div>
+    <div class="cta-l" id="s5l">Explore all 99 senators in the interactive Dive.</div>
+    <div class="pill" id="s5p"><span class="s">★</span> Vote · Dive Gallery</div>
+    <div class="url" id="s5u">motherduck.com/dive-gallery</div>
+  </div></div>
+
+</div>
+
+<script src="gsap.min.js"></script>
+<script>
+  window.__timelines = window.__timelines || {};
+  const tl = gsap.timeline({ paused:true });
+  const fIn=(s,t)=>tl.to(s,{opacity:1,duration:0.55,ease:"power2.out"},t);
+  const fOut=(s,t)=>tl.to(s,{opacity:0,duration:0.55,ease:"power2.in"},t);
+
+  // S1  0 – 6.95   (VO 0.5–6.77)
+  fIn("#s1",0.1);
+  tl.from("#s1k",{y:-24,opacity:0,duration:0.6,ease:"power3.out"},0.4);
+  tl.from("#s1t",{y:80,opacity:0,duration:0.9,ease:"expo.out"},0.7);
+  tl.from("#s1s",{y:34,opacity:0,duration:0.7,ease:"power2.out"},1.3);
+  tl.from("#s1f .f",{scale:0,opacity:0,duration:0.5,ease:"back.out(1.7)",stagger:0.07},1.7);
+
+  // S2  6.95 – 13.15  (VO 7.22–12.93)
+  fOut("#s1",6.5); fIn("#s2",6.95);
+  tl.from("#s2c",{y:-30,opacity:0,duration:0.6,ease:"power3.out"},7.2);
+  tl.from("#s2f",{y:70,opacity:0,scale:0.95,duration:0.8,ease:"expo.out"},7.4);
+  tl.fromTo("#s2img",{scale:1.0},{scale:1.42,duration:5.4,ease:"none"},7.6); // illustrate: zoom into the faces
+  tl.from("#s2a span",{y:20,opacity:0,duration:0.5,ease:"power2.out",stagger:0.15},8.2);
+
+  // S3  13.15 – 21.15  (VO 13.38–20.95)
+  fOut("#s2",12.7); fIn("#s3",13.15);
+  tl.from("#s3a .n",{scale:0.6,opacity:0,duration:0.7,ease:"back.out(1.5)"},13.5);
+  tl.from("#s3a .t",{y:24,opacity:0,duration:0.5,ease:"power2.out"},13.9);
+  tl.from("#s3b .t",{y:24,opacity:0,duration:0.5,ease:"power2.out"},16.4);
+  tl.from("#s3b .n",{y:40,opacity:0,duration:0.7,ease:"expo.out"},16.8);
+
+  // S4  21.15 – 37.95  (VO 21.40–37.75)  candidate detail, zoom-through
+  fOut("#s3",20.7); fIn("#s4",21.15);
+  tl.from("#s4head",{y:-40,opacity:0,duration:0.6,ease:"power3.out"},21.4);
+  tl.from("#s4wrap",{y:60,opacity:0,scale:0.94,duration:0.8,ease:"expo.out"},21.7);
+  // modal starts showing the top (full-ish)
+  tl.set("#s4img",{scale:1.0,x:0,y:0},21.7);
+  // beat: zoom to stats row ($156M peak)  ~23.6
+  tl.to("#s4img",{scale:1.35,x:-161,y:292,duration:0.9,ease:"power2.inOut"},23.6);
+  tl.from("#c1",{x:-40,opacity:0,duration:0.5,ease:"back.out(1.5)"},23.9);
+  // beat: pan to funding mix / out-of-state (93%)  ~25.9
+  tl.to("#s4img",{scale:1.35,x:-161,y:127,duration:0.9,ease:"power2.inOut"},25.9);
+  tl.from("#c2",{x:-40,opacity:0,duration:0.5,ease:"back.out(1.5)"},26.2);
+  // beat: pan to top org donors (Big Tech)  ~28.6
+  tl.to("#s4img",{scale:1.4,x:-184,y:-400,duration:0.95,ease:"power2.inOut"},28.6);
+  tl.from("#c3",{x:-40,opacity:0,duration:0.5,ease:"back.out(1.5)"},28.9);
+  // beat: pan to super-PAC ($121.9M opposing)  ~32.0
+  tl.to("#s4img",{scale:1.4,x:-184,y:-123,duration:0.95,ease:"power2.inOut"},32.0);
+  tl.from("#c4",{x:-40,opacity:0,duration:0.5,ease:"back.out(1.6)"},32.4);
+
+  // S5  37.95 – 45.7  (VO 38.20–44.66)
+  fOut("#s4",37.5); fIn("#s5",37.95);
+  tl.from("#s5k",{y:-22,opacity:0,duration:0.5,ease:"power2.out"},38.2);
+  tl.from("#s5t",{y:60,opacity:0,duration:0.8,ease:"expo.out"},38.4);
+  tl.from("#s5l",{y:28,opacity:0,duration:0.6,ease:"power2.out"},38.9);
+  tl.from("#s5p",{scale:0.85,opacity:0,duration:0.6,ease:"back.out(1.6)"},39.4);
+  tl.from("#s5u",{opacity:0,duration:0.6,ease:"power1.out"},39.9);
+  tl.to("#s5 .col",{opacity:0,duration:0.7,ease:"power2.in"},44.9); // final fade only
+
+  window.__timelines["root"] = tl;
+</script>
+</body>
+</html>
