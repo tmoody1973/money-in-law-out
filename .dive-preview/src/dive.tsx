@@ -1,6 +1,6 @@
 import { useSQLQuery, useDiveState } from "@motherduck/react-sql-query";
 import {
-  ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Label,
 } from "recharts";
 
 // ── theme ──────────────────────────────────────────────────────────
@@ -12,6 +12,7 @@ const GREEN = "#3fb950";
 const N = (v: unknown): number => (v != null ? Number(v) : 0);
 const PARTY = (p: string) => (p === "Democrat" ? DEM : p === "Republican" ? REP : IND);
 const PARTY_NAME: Record<string, string> = { D: "Democrat", R: "Republican", I: "Independent" };
+const PARTY_DOT: Record<string, string> = { D: DEM, R: REP, I: IND };
 const cleanCommittee = (s: string) =>
   s.replace(/^Senate Select Committee on /, "")
    .replace(/^Senate Committee on /, "")
@@ -203,7 +204,8 @@ export default function Dive() {
       <p className="text-sm mb-2" style={{ color: MUTED }}>
         U.S. Senate · campaign money raised vs. bills sponsored, 119th Congress · click a face
       </p>
-      <p className="text-sm mb-5" style={{ color: TEXT, maxWidth: 760 }}>
+      <p className="text-sm mb-5" style={{ color: TEXT, maxWidth: 820, lineHeight: 1.55,
+        borderLeft: `3px solid ${DEM}`, paddingLeft: 12 }}>
         The best-funded senators aren't slackers — the top-funded 10% sponsor a median{" "}
         <b>{N(k.top_funded_median)}</b> bills vs <b>{N(k.overall_median)}</b> chamber-wide. Yet{" "}
         <b>{N(k.n_mostly_out)} of {N(k.n)}</b> raise ≥70% of their money <b>out-of-state</b> — and almost
@@ -218,9 +220,13 @@ export default function Dive() {
       <div className="flex gap-2 mb-3 flex-wrap items-center">
         <span className="text-xs" style={{ color: MUTED }}>party</span>
         {["all", "D", "R", "I"].map((p) => (
-          <button key={p} onClick={() => setPartyF(p)} className="text-xs px-2 py-1 rounded"
-            style={{ background: partyF === p ? DEM : TILE, color: partyF === p ? "#04121f" : TEXT,
-              border: `1px solid ${BORDER}` }}>{p}</button>
+          <button key={p} onClick={() => setPartyF(p)}
+            className="text-xs px-2 py-1 rounded inline-flex items-center gap-1"
+            style={{ background: TILE, color: TEXT,
+              border: `1px solid ${partyF === p ? DEM : BORDER}`, fontWeight: partyF === p ? 700 : 400 }}>
+            {p !== "all" && <span style={{ width: 8, height: 8, borderRadius: 999, background: PARTY_DOT[p], display: "inline-block" }} />}
+            {p === "all" ? "all" : p}
+          </button>
         ))}
         <span className="text-xs ml-2" style={{ color: MUTED }}>state</span>
         <select value={stateF} onChange={(e) => setStateF(e.target.value)} className="text-xs"
@@ -235,7 +241,8 @@ export default function Dive() {
         <span className="text-xs ml-1" style={{ color: MUTED }}>· showing {shown.length}</span>
       </div>
 
-      <div className="flex gap-2 mb-3 flex-wrap">
+      <div className="flex gap-2 mb-4 flex-wrap items-center">
+        <span className="text-xs" style={{ color: MUTED }}>X-axis</span>
         {(Object.keys(X_LABEL) as XMetric[]).map((m) => (
           <button key={m} onClick={() => setXMetric(m)} className="text-xs px-2 py-1 rounded"
             style={{ background: xMetric === m ? DEM : TILE, color: xMetric === m ? "#04121f" : TEXT,
@@ -249,14 +256,20 @@ export default function Dive() {
         <div className="animate-pulse rounded" style={{ height: 460, background: PANEL }} />
       ) : (
         <ResponsiveContainer width="100%" height={460}>
-          <ScatterChart margin={{ top: 10, right: 24, bottom: 34, left: 16 }}>
+          <ScatterChart margin={{ top: 10, right: 24, bottom: 46, left: 28 }}>
             <CartesianGrid stroke="#21262d" />
             <XAxis type="number" dataKey="x" name={X_LABEL[xMetric]} fontSize={11}
               stroke={MUTED} scale={isPct(xMetric) ? "linear" : "log"}
               domain={isPct(xMetric) ? [0, "dataMax"] : ["auto", "auto"]}
-              tickFormatter={(v) => fmtX(xMetric, v)} />
+              tickFormatter={(v) => fmtX(xMetric, v)}>
+              <Label value={`${X_LABEL[xMetric]} →`} position="insideBottom" offset={-16}
+                fill={TEXT} fontSize={12} />
+            </XAxis>
             <YAxis type="number" dataKey="y" name="Bills sponsored" fontSize={11}
-              stroke={MUTED} tickFormatter={(v) => String(v)} />
+              stroke={MUTED} tickFormatter={(v) => String(v)}>
+              <Label value="Bills sponsored ↑" angle={-90} position="insideLeft" offset={-4}
+                fill={TEXT} fontSize={12} style={{ textAnchor: "middle" }} />
+            </YAxis>
             <Tooltip cursor={{ strokeDasharray: "3 3", stroke: MUTED }}
               content={({ payload }) => {
                 const p = payload?.[0]?.payload; if (!p) return null;
