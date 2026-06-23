@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  /* ── Dive palette (the brand) ───────────────────────────── */
+  :root{
+    --bg:#0d1117; --panel:#161b22; --tile:#1c2230; --border:#30363d;
+    --text:#e6edf3; --muted:#8b949e; --dem:#4aa3df; --rep:#ff6b6b; --green:#3fb950;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  [data-composition-id="root"]{
+    width:1920px;height:1080px;position:relative;overflow:hidden;
+    background:
+      radial-gradient(1200px 700px at 50% 18%, #15233a 0%, rgba(13,17,23,0) 60%),
+      var(--bg);
+    font-family:"Inter","Helvetica Neue",system-ui,sans-serif;
+    color:var(--text);
+  }
+  .scene{position:absolute;inset:0;opacity:0;}
+  .pad{position:absolute;inset:0;display:flex;flex-direction:column;
+       justify-content:center;align-items:center;padding:110px 160px;gap:28px;}
+
+  /* ── Scene 1 · Title ── */
+  .kicker{font-size:26px;letter-spacing:6px;text-transform:uppercase;color:var(--dem);font-weight:700;}
+  .title{font-size:150px;font-weight:800;line-height:0.96;letter-spacing:-2px;text-align:center;}
+  .title .law{color:var(--dem);}
+  .subtitle{font-size:40px;color:var(--muted);text-align:center;max-width:1200px;font-weight:500;}
+  .faces-row{display:flex;gap:14px;margin-top:10px;}
+  .faces-row .f{width:64px;height:64px;border-radius:999px;border:3px solid var(--dem);
+                background:var(--tile);}
+  .faces-row .f.r{border-color:var(--rep);}
+
+  /* ── Scene 2 · Finding ── */
+  .find-wrap{display:flex;flex-direction:column;gap:46px;align-items:flex-start;width:100%;max-width:1500px;}
+  .find-row{display:flex;align-items:baseline;gap:30px;}
+  .bignum{font-size:170px;font-weight:800;line-height:0.9;letter-spacing:-3px;font-variant-numeric:tabular-nums;}
+  .bignum.dem{color:var(--dem);} .bignum.rep{color:var(--rep);} .bignum.green{color:var(--green);}
+  .find-text{font-size:46px;font-weight:600;color:var(--text);max-width:900px;line-height:1.15;}
+  .find-text b{color:var(--text);}
+  .find-sub{font-size:28px;color:var(--muted);}
+
+  /* ── Scenes 3-4 · screenshots in a frame ── */
+  .frame{position:relative;border:1px solid var(--border);border-radius:16px;overflow:hidden;
+         box-shadow:0 40px 120px rgba(0,0,0,0.55);background:var(--bg);}
+  .bartop{height:34px;background:#0b0f14;display:flex;align-items:center;gap:8px;padding:0 14px;
+          border-bottom:1px solid var(--border);}
+  .bartop i{width:11px;height:11px;border-radius:999px;background:#2a313c;display:inline-block;}
+  .shot{display:block;}
+  .scene-cap{position:absolute;font-size:34px;font-weight:600;color:var(--text);}
+  .callout{position:absolute;background:rgba(22,27,34,0.96);border:1px solid var(--border);
+           border-radius:12px;padding:14px 18px;font-size:30px;font-weight:700;
+           box-shadow:0 16px 50px rgba(0,0,0,0.5);white-space:nowrap;}
+  .callout .lbl{display:block;font-size:18px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
+  .callout.rep{border-color:var(--rep);} .callout.rep .v{color:var(--rep);}
+  .callout.dem{border-color:var(--dem);} .callout.dem .v{color:var(--dem);}
+
+  /* ── Scene 5 · CTA ── */
+  .cta-title{font-size:120px;font-weight:800;letter-spacing:-2px;text-align:center;}
+  .cta-line{font-size:40px;color:var(--muted);text-align:center;font-weight:500;}
+  .pill{display:inline-flex;align-items:center;gap:14px;background:var(--tile);
+        border:1px solid var(--dem);border-radius:999px;padding:18px 34px;font-size:36px;font-weight:700;color:var(--text);}
+  .pill .star{color:var(--green);}
+  .src{font-size:24px;color:var(--muted);letter-spacing:1px;}
+  b.dem{color:var(--dem);} b.rep{color:var(--rep);} b.green{color:var(--green);}
+</style>
+</head>
+<body>
+<div data-composition-id="root" data-width="1920" data-height="1080" data-start="0" data-duration="31" data-track-index="0">
+
+  <!-- Scene 1 · Title -->
+  <div class="scene" id="s1">
+    <div class="pad">
+      <div class="kicker" id="s1-kicker">A MotherDuck Dive · DiveMaxxing</div>
+      <div class="title" id="s1-title">Money In,<br><span class="law">Law Out</span></div>
+      <div class="subtitle" id="s1-sub">Who funds the U.S. Senate — and what they actually do with it.</div>
+      <div class="faces-row" id="s1-faces">
+        <div class="f"></div><div class="f r"></div><div class="f"></div><div class="f r"></div>
+        <div class="f"></div><div class="f r"></div><div class="f"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scene 2 · The finding -->
+  <div class="scene" id="s2">
+    <div class="pad" style="align-items:flex-start;">
+      <div class="find-wrap">
+        <div class="find-row" id="s2-r1">
+          <div class="bignum rep" id="s2-n1">70<span style="font-size:90px;color:var(--muted);">/99</span></div>
+          <div class="find-text">senators have passed <b>zero laws</b> this Congress.</div>
+        </div>
+        <div class="find-row" id="s2-r2">
+          <div class="bignum dem" id="s2-n2">35<span style="font-size:90px;color:var(--muted);">/99</span></div>
+          <div class="find-text">raise <b>70%+ of their money</b> from <b>out of state.</b></div>
+        </div>
+        <div class="find-sub" id="s2-sub">Campaign money, Super-PAC money, lawmaking — 99 senators, one chart.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scene 3 · The scatter -->
+  <div class="scene" id="s3">
+    <div class="pad" style="justify-content:flex-start;padding-top:70px;gap:22px;">
+      <div class="scene-cap" id="s3-cap" style="position:relative;text-align:center;">
+        Every senator, plotted by <b class="dem">money raised</b> × <b>bills sponsored.</b> Each face is real.
+      </div>
+      <div class="frame" id="s3-frame" style="width:1380px;">
+        <div class="bartop"><i></i><i></i><i></i></div>
+        <img class="shot" id="s3-img" src="assets/embed-scatter.png" width="1380" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Scene 4 · The dossier -->
+  <div class="scene" id="s4">
+    <div class="pad" style="flex-direction:row;justify-content:center;align-items:center;gap:60px;padding:90px 120px;">
+      <div class="frame" id="s4-frame" style="width:880px;height:560px;">
+        <div class="bartop"><i></i><i></i><i></i></div>
+        <div style="width:100%;height:526px;background-image:url(assets/embed-modal-ossoff.png);
+             background-size:172%;background-position:50% 30%;"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:30px;width:560px;" id="s4-side">
+        <div class="scene-cap" style="position:relative;font-size:40px;">Click any face → <b class="dem">follow the money.</b></div>
+        <div class="callout rep" id="s4-c1" style="position:relative;">
+          <span class="lbl">Super-PAC money to defeat him</span><span class="v">$121.9M opposing</span>
+        </div>
+        <div class="callout dem" id="s4-c2" style="position:relative;">
+          <span class="lbl">Top donors · Jon Ossoff (D-GA)</span><span class="v">Google · Microsoft · Apple</span>
+        </div>
+        <div class="callout" id="s4-c3" style="position:relative;border-color:var(--green);">
+          <span class="lbl">Raised out of state</span><span class="v" style="color:var(--green);">93%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scene 5 · CTA -->
+  <div class="scene" id="s5">
+    <div class="pad">
+      <div class="kicker" id="s5-k">Live data · FEC + Congress.gov</div>
+      <div class="cta-title" id="s5-title">Follow the money.</div>
+      <div class="cta-line" id="s5-line">Explore all 99 senators in the interactive Dive.</div>
+      <div class="pill" id="s5-pill"><span class="star">★</span> Vote · MotherDuck Dive Gallery</div>
+      <div class="src" id="s5-src">motherduck.com/dive-gallery</div>
+    </div>
+  </div>
+
+</div>
+
+<script src="gsap.min.js"></script>
+<script>
+  window.__timelines = window.__timelines || {};
+  const tl = gsap.timeline({ paused:true });
+
+  // scene crossfades (container-level = the transition)
+  const fadeIn  = (sel,t)=>tl.to(sel,{opacity:1,duration:0.55,ease:"power2.out"},t);
+  const fadeOut = (sel,t)=>tl.to(sel,{opacity:0,duration:0.55,ease:"power2.in"},t);
+
+  // S1 0.0–5.0
+  fadeIn("#s1",0.0);
+  tl.from("#s1-kicker",{y:-20,opacity:0,duration:0.6,ease:"power3.out"},0.2);
+  tl.from("#s1-title",{y:70,opacity:0,duration:0.9,ease:"expo.out"},0.4);
+  tl.from("#s1-sub",{y:30,opacity:0,duration:0.7,ease:"power2.out"},0.9);
+  tl.from("#s1-faces .f",{scale:0,opacity:0,duration:0.5,ease:"back.out(1.7)",stagger:0.06},1.2);
+
+  // S1→S2 4.6
+  fadeOut("#s1",4.6); fadeIn("#s2",4.7);
+  tl.from("#s2-n1",{x:-50,opacity:0,duration:0.7,ease:"expo.out"},5.0);
+  tl.from("#s2-r1 .find-text",{x:40,opacity:0,duration:0.6,ease:"power3.out"},5.2);
+  tl.from("#s2-n2",{x:-50,opacity:0,duration:0.7,ease:"expo.out"},5.9);
+  tl.from("#s2-r2 .find-text",{x:40,opacity:0,duration:0.6,ease:"power3.out"},6.1);
+  tl.from("#s2-sub",{y:24,opacity:0,duration:0.6,ease:"power2.out"},7.0);
+
+  // S2→S3 10.4
+  fadeOut("#s2",10.4); fadeIn("#s3",10.55);
+  tl.from("#s3-cap",{y:-26,opacity:0,duration:0.6,ease:"power3.out"},10.9);
+  tl.from("#s3-frame",{y:60,opacity:0,scale:0.96,duration:0.8,ease:"expo.out"},11.1);
+  // slow ken-burns drift on the chart
+  tl.fromTo("#s3-img",{scale:1.0},{scale:1.06,duration:6.0,ease:"none"},11.4);
+
+  // S3→S4 17.6
+  fadeOut("#s3",17.6); fadeIn("#s4",17.75);
+  tl.from("#s4-frame",{x:-60,opacity:0,duration:0.8,ease:"expo.out"},18.0);
+  tl.from("#s4-side .scene-cap",{x:40,opacity:0,duration:0.6,ease:"power3.out"},18.3);
+  tl.from("#s4-c1",{x:50,opacity:0,duration:0.55,ease:"back.out(1.5)"},18.8);
+  tl.from("#s4-c2",{x:50,opacity:0,duration:0.55,ease:"back.out(1.5)"},19.3);
+  tl.from("#s4-c3",{x:50,opacity:0,duration:0.55,ease:"back.out(1.5)"},19.8);
+
+  // S4→S5 25.0
+  fadeOut("#s4",25.0); fadeIn("#s5",25.15);
+  tl.from("#s5-k",{y:-20,opacity:0,duration:0.5,ease:"power2.out"},25.5);
+  tl.from("#s5-title",{y:50,opacity:0,duration:0.8,ease:"expo.out"},25.7);
+  tl.from("#s5-line",{y:26,opacity:0,duration:0.6,ease:"power2.out"},26.1);
+  tl.from("#s5-pill",{scale:0.85,opacity:0,duration:0.6,ease:"back.out(1.6)"},26.5);
+  tl.from("#s5-src",{opacity:0,duration:0.6,ease:"power1.out"},27.0);
+  // final fade-out (only the last scene may exit)
+  tl.to("#s5 .pad",{opacity:0,duration:0.7,ease:"power2.in"},30.2);
+
+  window.__timelines["root"] = tl;
+</script>
+</body>
+</html>

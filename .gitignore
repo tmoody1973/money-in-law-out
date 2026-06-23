@@ -7,3 +7,7 @@ node_modules/
 .dive-preview/.env
 .playwright-mcp/
 /*.png
+frames/
+video/frames/
+video/_verify_*.png
+video/node_modules/
