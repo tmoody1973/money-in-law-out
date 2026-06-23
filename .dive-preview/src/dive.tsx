@@ -1,7 +1,6 @@
-import { useState } from "react";
 import { useSQLQuery, useDiveState } from "@motherduck/react-sql-query";
 import {
-  ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceArea,
+  ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
 
 // ── theme ──────────────────────────────────────────────────────────
