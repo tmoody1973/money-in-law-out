@@ -156,7 +156,15 @@ Adds the influence industry as a third actor: **client/firm → lobbied bill →
 - **Why deferred:** unfamiliar multi-table ETL (fuzzy LDA bill-number matching, large LobbyView files),
   too risky against a same-day deadline with a working entry to protect.
 - **Min schema:** `filings, clients, registrants, lobbyists, filing_issues, filing_bills, bills, senators,
-  committees, senator_bill_edges, client_senator_influence_edges`.
+  committees, senator_edges, edge_evidence` — store `observed_evidence` separate from `inferred_edge`.
+- **Confidence ladder** (LDA has no senator key — every edge is inferred, score it 0–1, never present
+  low-confidence as fact):
+  - `bill_sponsor` — filing linked to a bill the senator sponsored → **1.0**
+  - `bill_cosponsor` — linked to a bill they cosponsored → **0.7**
+  - `committee_jurisdiction` — +**0.2** if they sat on the committee of referral that Congress
+  - `senate_chamber_only` — filing says "U.S. Senate" + issue code matches a committee domain → **0.25**
+  - `issue_text_semantic` — free-text similarity to their committee/sponsored work → low-medium
+  - Edge object: `{edge_type, confidence_score, evidence:[bill_ids, filing_ids, issue_snippets, committee_codes], cycle}`.
 - **In-Dive surface:** modal section "Lobbying pressure on their bills" — top clients/firms that lobbied
   the bills this senator sponsored, + filing counts by issue.
 
