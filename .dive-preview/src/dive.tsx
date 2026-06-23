@@ -90,13 +90,14 @@ export default function Dive() {
 
   const kpi = useSQLQuery(`
     WITH r AS (
-      SELECT bills_sponsored, total_raised, out_state_pct,
+      SELECT bills_sponsored, total_raised, out_state_pct, laws_passed,
              ntile(10) OVER (ORDER BY total_raised DESC) AS d
       FROM "my_db"."main"."member_money_law"
     )
     SELECT round(median(bills_sponsored) FILTER (WHERE d = 1)) AS top_funded_median,
            round(median(bills_sponsored)) AS overall_median, count(*) AS n,
            count(*) FILTER (WHERE out_state_pct >= 70) AS n_mostly_out,
+           count(*) FILTER (WHERE laws_passed = 0) AS n_zero_laws,
            round(avg(out_state_pct)) AS avg_out
     FROM r
   `);
@@ -131,7 +132,7 @@ export default function Dive() {
   const detail = useSQLQuery(
     `SELECT full_name, state, party, total_raised, career_receipts, cash_on_hand,
             pct_from_pacs, pct_from_individuals, pct_small_dollar, out_state_pct,
-            dollars_per_resident, bills_sponsored, photo_uri
+            dollars_per_resident, bills_sponsored, laws_passed, photo_uri
      FROM "my_db"."main"."member_money_law" WHERE bioguide_id = '${bg}'`,
     { enabled: !!bg }
   );
@@ -150,7 +151,7 @@ export default function Dive() {
     { enabled: !!bg }
   );
   const bills = useSQLQuery(
-    `SELECT title, latest_action, action_date FROM "my_db"."main"."bills"
+    `SELECT title, latest_action, action_date, url FROM "my_db"."main"."bills"
      WHERE bioguide_id = '${bg}' ORDER BY action_date DESC LIMIT 5`,
     { enabled: !!bg }
   );
@@ -205,8 +206,23 @@ export default function Dive() {
       <p className="text-sm mb-5" style={{ color: TEXT, maxWidth: 760 }}>
         The best-funded senators aren't slackers — the top-funded 10% sponsor a median{" "}
         <b>{N(k.top_funded_median)}</b> bills vs <b>{N(k.overall_median)}</b> chamber-wide. Yet{" "}
-        <b>{N(k.n_mostly_out)} of {N(k.n)}</b> raise ≥70% of their money <b>out-of-state</b>.
+        <b>{N(k.n_mostly_out)} of {N(k.n)}</b> raise ≥70% of their money <b>out-of-state</b> — and almost
+        none of it becomes law: <b>{N(k.n_zero_laws)} of {N(k.n)}</b> senators have enacted <b>zero</b> bills this Congress.
       </p>
+
+      <div className="flex gap-2 flex-wrap text-xs mb-5" style={{ color: MUTED }}>
+        {[
+          "Each face = one U.S. senator",
+          "↑ higher = sponsored more bills",
+          "→ right = more, on the money metric you pick",
+          "bigger face = bigger campaign",
+        ].map((t, i) => (
+          <span key={i} style={{ background: TILE, border: `1px solid ${BORDER}`, borderRadius: 999, padding: "3px 10px" }}>{t}</span>
+        ))}
+        <span style={{ background: TILE, border: `1px solid ${DEM}`, borderRadius: 999, padding: "3px 10px", color: DEM }}>
+          Click a face → who funds them
+        </span>
+      </div>
 
       <div className="grid grid-cols-4 gap-3 mb-5">
         {LEAD_CATS.map((cat) => (
@@ -316,10 +332,11 @@ export default function Dive() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-4 gap-3" style={{ marginBottom: 14 }}>
+                <div className="grid grid-cols-5 gap-3" style={{ marginBottom: 14 }}>
                   {[
                     { v: fmtM(N(d.total_raised)), l: "peak campaign" },
                     { v: N(d.bills_sponsored), l: "bills (119th)" },
+                    { v: N(d.laws_passed), l: "became law" },
                     { v: fmtM(N(d.cash_on_hand)), l: "cash on hand" },
                     { v: `$${N(d.dollars_per_resident).toFixed(0)}`, l: "raised / resident" },
                   ].map((s, i) => (
@@ -388,7 +405,11 @@ export default function Dive() {
                   <div className="text-xs mb-1" style={{ color: MUTED }}>RECENT BILLS (119TH)</div>
                   {(Array.isArray(bills.data) ? bills.data : []).map((b, i) => (
                     <div key={i} className="text-xs" style={{ padding: "2px 0", color: TEXT }}>
-                      • {b.title as string} <span style={{ color: MUTED }}>— {b.latest_action as string}</span>
+                      • {b.url ? (
+                        <a href={b.url as string} target="_blank" rel="noopener noreferrer"
+                          style={{ color: DEM, textDecoration: "underline" }}>{b.title as string}</a>
+                      ) : (b.title as string)}
+                      {" "}<span style={{ color: MUTED }}>— {b.latest_action as string}</span>
                     </div>))}
                 </div>
               </>

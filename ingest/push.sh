@@ -28,6 +28,8 @@ CREATE OR REPLACE TABLE my_db.main.super_pac_totals AS
   SELECT * FROM read_csv_auto('data/super_pac_totals.csv', header=true);
 CREATE OR REPLACE TABLE my_db.main.super_pac AS
   SELECT * FROM read_csv_auto('data/super_pac.csv', header=true);
+CREATE OR REPLACE TABLE my_db.main.laws AS
+  SELECT * FROM read_csv_auto('data/laws.csv', header=true);
 
 -- main analytic view (drives the scatter + modal headline numbers) ----------
 CREATE OR REPLACE VIEW my_db.main.member_money_law AS
@@ -36,6 +38,7 @@ CREATE OR REPLACE VIEW my_db.main.member_money_law AS
          f.pac_contributions, f.individual_itemized, f.individual_unitemized,
          f.out_state_pct,
          COALESCE(sp.bills_sponsored, 0) AS bills_sponsored,
+         COALESCE(lw.laws_passed, 0) AS laws_passed,
          CASE WHEN f.receipts>0 THEN 100.0*f.pac_contributions/f.receipts ELSE 0 END AS pct_from_pacs,
          CASE WHEN f.receipts>0 THEN 100.0*f.individual_itemized/f.receipts ELSE 0 END AS pct_from_individuals,
          CASE WHEN f.receipts>0 THEN 100.0*f.individual_unitemized/f.receipts ELSE 0 END AS pct_small_dollar,
@@ -44,6 +47,7 @@ CREATE OR REPLACE VIEW my_db.main.member_money_law AS
   FROM my_db.main.members_spine m
   JOIN my_db.main.fec_totals f USING (fec_id)
   LEFT JOIN my_db.main.sponsored sp USING (bioguide_id)
+  LEFT JOIN my_db.main.laws lw USING (bioguide_id)
   LEFT JOIN my_db.main.state_pop pop ON pop.state = m.state
   LEFT JOIN my_db.main.photos ph USING (bioguide_id);
 
