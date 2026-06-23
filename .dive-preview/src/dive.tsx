@@ -1,6 +1,7 @@
+import { useState } from "react";
 import { useSQLQuery, useDiveState } from "@motherduck/react-sql-query";
 import {
-  ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceArea,
 } from "recharts";
 
 // ── theme ──────────────────────────────────────────────────────────
@@ -102,21 +103,28 @@ export default function Dive() {
   const leads = useSQLQuery(`
     SELECT * FROM (
       (SELECT 1 AS ord, 'Bankrolled by strangers' AS lead, full_name AS nm, bioguide_id AS bg,
-              printf('%.0f%% out-of-state', out_state_pct) AS val
-       FROM "my_db"."main"."member_money_law" ORDER BY out_state_pct DESC LIMIT 1)
+              printf('%.0f%%', out_state_pct) AS val,
+              row_number() OVER (ORDER BY out_state_pct DESC) AS rk
+       FROM "my_db"."main"."member_money_law" ORDER BY out_state_pct DESC LIMIT 5)
       UNION ALL
-      (SELECT 2, 'Most PAC-reliant', full_name, bioguide_id, printf('%.0f%% from PACs', pct_from_pacs)
-       FROM "my_db"."main"."member_money_law" ORDER BY pct_from_pacs DESC LIMIT 1)
+      (SELECT 2, 'Most PAC-reliant', full_name, bioguide_id, printf('%.0f%%', pct_from_pacs),
+              row_number() OVER (ORDER BY pct_from_pacs DESC)
+       FROM "my_db"."main"."member_money_law" ORDER BY pct_from_pacs DESC LIMIT 5)
       UNION ALL
       (SELECT 3, 'Big money, few bills', full_name, bioguide_id,
-              printf('$%.0fM / %d bills', total_raised/1e6, bills_sponsored)
-       FROM "my_db"."main"."member_money_law" WHERE total_raised > 5e7 ORDER BY bills_sponsored ASC LIMIT 1)
+              printf('$%.0fM/%d', total_raised/1e6, bills_sponsored),
+              row_number() OVER (ORDER BY bills_sponsored ASC)
+       FROM "my_db"."main"."member_money_law" WHERE total_raised > 5e7 ORDER BY bills_sponsored ASC LIMIT 5)
       UNION ALL
-      (SELECT 4, 'Priciest seat', full_name, bioguide_id, printf('$%.0f / resident', dollars_per_resident)
-       FROM "my_db"."main"."member_money_law" ORDER BY dollars_per_resident DESC LIMIT 1)
-    ) ORDER BY ord
+      (SELECT 4, 'Priciest seat', full_name, bioguide_id, printf('$%.0f', dollars_per_resident),
+              row_number() OVER (ORDER BY dollars_per_resident DESC)
+       FROM "my_db"."main"."member_money_law" ORDER BY dollars_per_resident DESC LIMIT 5)
+    ) ORDER BY ord, rk
   `);
   const leadRows = Array.isArray(leads.data) ? leads.data : [];
+  const LEAD_CATS = ["Bankrolled by strangers", "Most PAC-reliant", "Big money, few bills", "Priciest seat"];
+  const leadsByCat: Record<string, any[]> = {};
+  for (const r of leadRows) (leadsByCat[r.lead as string] ||= []).push(r);
 
   const detail = useSQLQuery(
     `SELECT full_name, state, party, total_raised, career_receipts, cash_on_hand,
@@ -142,6 +150,11 @@ export default function Dive() {
   const bills = useSQLQuery(
     `SELECT title, latest_action, action_date FROM "my_db"."main"."bills"
      WHERE bioguide_id = '${bg}' ORDER BY action_date DESC LIMIT 5`,
+    { enabled: !!bg }
+  );
+  const oosStates = useSQLQuery(
+    `SELECT from_state, amount FROM "my_db"."main"."out_of_state"
+     WHERE bioguide_id = '${bg}' ORDER BY rank LIMIT 5`,
     { enabled: !!bg }
   );
   const d = (Array.isArray(detail.data) ? detail.data : [])[0];
@@ -179,18 +192,21 @@ export default function Dive() {
       </p>
 
       <div className="grid grid-cols-4 gap-3 mb-5">
-        {(leads.isLoading ? Array.from({ length: 4 }) : leadRows).map((l: any, i: number) => (
-          <button key={i} onClick={() => l && setSel(l.bg as string)}
-            style={{ textAlign: "left", background: TILE, border: `1px solid ${BORDER}`,
-              borderRadius: 8, padding: "8px 10px", cursor: "pointer" }}>
-            {l ? (
-              <>
-                <div className="text-xs" style={{ color: MUTED }}>{l.lead as string}</div>
-                <div className="text-sm font-semibold" style={{ color: TEXT }}>{l.nm as string}</div>
-                <div className="text-xs" style={{ color: DEM }}>{l.val as string} →</div>
-              </>
-            ) : <div className="animate-pulse" style={{ height: 44 }} />}
-          </button>
+        {LEAD_CATS.map((cat) => (
+          <div key={cat} style={{ background: TILE, border: `1px solid ${BORDER}`, borderRadius: 8, padding: "8px 10px" }}>
+            <div className="text-xs mb-1" style={{ color: MUTED }}>{cat}</div>
+            {leads.isLoading ? (
+              <div className="animate-pulse" style={{ height: 80, background: PANEL, borderRadius: 4 }} />
+            ) : (leadsByCat[cat] || []).map((l, i) => (
+              <button key={i} onClick={() => setSel(l.bg as string)}
+                style={{ display: "flex", justifyContent: "space-between", gap: 6, width: "100%",
+                  textAlign: "left", padding: "1px 0", cursor: "pointer" }}>
+                <span className="text-xs" style={{ color: TEXT, overflow: "hidden",
+                  textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{N(l.rk)}. {l.nm as string}</span>
+                <span className="text-xs" style={{ color: DEM, flexShrink: 0 }}>{l.val as string}</span>
+              </button>
+            ))}
+          </div>
         ))}
       </div>
 
@@ -281,6 +297,17 @@ export default function Dive() {
                   <div className="text-xs mb-1" style={{ color: MUTED }}>WHO FUNDS THEM
                     <span style={{ float: "right" }}>{N(d.out_state_pct).toFixed(0)}% out-of-state</span></div>
                   <MixBar pac={N(d.pct_from_pacs)} ind={N(d.pct_from_individuals)} small={N(d.pct_small_dollar)} />
+                  {(Array.isArray(oosStates.data) ? oosStates.data : []).length > 0 && (
+                    <div className="text-xs mt-2" style={{ color: MUTED }}>
+                      out-of-state money from:{" "}
+                      {(Array.isArray(oosStates.data) ? oosStates.data : []).map((s, i) => (
+                        <span key={i}>
+                          <span style={{ color: TEXT }}>{s.from_state as string}</span> {fmtAmt(N(s.amount))}
+                          {i < (oosStates.data as any[]).length - 1 ? "  ·  " : ""}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 <div className="grid grid-cols-2 gap-4" style={{ marginBottom: 14 }}>
