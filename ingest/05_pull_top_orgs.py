@@ -5,7 +5,7 @@ Raw FEC 'employer' data is dominated by non-orgs (NOT EMPLOYED, RETIRED, SELF
 EMPLOYED, …). We filter those out so real organizations (Microsoft, Amazon…)
 surface, then keep the top 5 per senator.
 """
-import csv, os, sys, time, urllib.request, urllib.parse, json
+import csv, os, sys, time, urllib.request, urllib.parse, urllib.error, json
 
 KEY = os.environ["FEC_API_KEY"]
 SPINE = "data/members_spine.csv"
@@ -17,11 +17,23 @@ EMP_URL = "https://api.open.fec.gov/v1/schedules/schedule_a/by_employer/"
 # employer strings that are not organizations
 JUNK = {"NOT EMPLOYED","SELF EMPLOYED","SELF-EMPLOYED","RETIRED","NONE","NULL",
         "HOMEMAKER","NOT APPLICABLE","N/A","NA","INFORMATION REQUESTED","UNEMPLOYED",
-        "NOT PROVIDED","REQUESTED","SELF","BEST EFFORTS","NOT REQUIRED","INDIVIDUAL"}
+        "NOT PROVIDED","REQUESTED","SELF","BEST EFFORTS","NOT REQUIRED","INDIVIDUAL",
+        "ENTREPRENEUR","HOUSEWIFE","INVESTOR","BUSINESS OWNER","OWNER","CONSULTANT",
+        "INFORMATION REQUESTED PER BEST EFFORTS","SELF-EMPLOYED","PHYSICIAN","ATTORNEY"}
+def is_junk(emp):
+    e = emp.upper()
+    return (not emp) or e in JUNK or "INFORMATION REQUESTED" in e or "BEST EFFORTS" in e
 
-def get(url):
-    with urllib.request.urlopen(url, timeout=60) as r:
-        return json.load(r)
+def get(url, retries=5):
+    for attempt in range(retries):
+        try:
+            with urllib.request.urlopen(url, timeout=60) as r:
+                return json.load(r)
+        except urllib.error.HTTPError as e:
+            if e.code in (429, 403) and attempt < retries - 1:
+                time.sleep(5 * (attempt + 1))   # back off on rate limit
+                continue
+            raise
 
 def principal_committee(cid):
     qs = urllib.parse.urlencode({"api_key": KEY, "designation": "P", "per_page": 1})
@@ -35,7 +47,7 @@ def top_orgs(cmte, cycle, n=5):
     out = []
     for row in rows:
         emp = (row.get("employer") or "").strip()
-        if not emp or emp.upper() in JUNK:
+        if is_junk(emp):
             continue
         out.append((emp.title(), float(row.get("total") or 0)))
         if len(out) >= n:
@@ -47,8 +59,14 @@ def main():
         spine = {r["fec_id"]: r["bioguide_id"] for r in csv.DictReader(f)}
     with open(TOTALS) as f:
         cyc = {r["fec_id"]: int(r["peak_cycle"] or 0) for r in csv.DictReader(f)}
-    out = []
-    items = list(spine.items())
+    # keep already-pulled senators; only backfill the missing ones
+    out, have = [], set()
+    if os.path.exists(OUT):
+        with open(OUT) as f:
+            for r in csv.DictReader(f):
+                out.append(r); have.add(r["bioguide_id"])
+    items = [(cid, bg) for cid, bg in spine.items() if bg not in have]
+    print(f"backfilling {len(items)} senators (already have {len(have)})", file=sys.stderr)
     for i, (cid, bg) in enumerate(items, 1):
         cycle = cyc.get(cid) or 2024
         orgs = []

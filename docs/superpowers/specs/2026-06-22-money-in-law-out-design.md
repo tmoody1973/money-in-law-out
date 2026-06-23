@@ -159,3 +159,12 @@ Adds the influence industry as a third actor: **client/firm → lobbied bill →
   committees, senator_bill_edges, client_senator_influence_edges`.
 - **In-Dive surface:** modal section "Lobbying pressure on their bills" — top clients/firms that lobbied
   the bills this senator sponsored, + filing counts by issue.
+
+## v2 — Super PAC / outside money (deferred)
+Named individual donors to the campaign committee are capped (~$6,600/cycle) so they all cluster at the
+max — not differentiating, not worth showing. The real mega-donor story is **uncapped outside money**:
+- **Source:** FEC independent expenditures + Super PAC (`/schedules/schedule_e/`, committee spending by
+  support/oppose candidate). Uncapped, so single donors can move millions — genuinely differentiating.
+- **In-Dive surface:** modal section "Outside money" — total Super PAC $ supporting vs. opposing each
+  senator, and the top spending committees. Pairs with the campaign-committee money already shown.
+- **Why deferred:** separate FEC dataset + entity resolution; same deadline-risk logic as lobbying.
